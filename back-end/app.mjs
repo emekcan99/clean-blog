@@ -1,11 +1,38 @@
 import express from "express";
+import mongoose from "mongoose";
+import Post from "./modals/Post.mjs";
+import cors from "cors";
+const app = express();
 
-const app = express()
+//db connection
 
-app.get("/", (req, res) => {
-  const blog = { id: 1, title: "Blog title", description: "Blog description" };
+mongoose.connect("mongodb://localhost/clean-blog-test-db");
 
-  res.send(blog);
+//Middlewares
+
+app.use(express.urlencoded({ extended: true }));
+
+app.use(express.json());
+
+app.use(
+  cors({
+    origin: "http://localhost:3000", // İzin verilen kaynak adresi
+    methods: "GET,POST,PUT,DELETE", // İzin verilen HTTP metotları
+    optionsSuccessStatus: 200, // Başarılı CORS isteklerinin durum kodu
+  })
+);
+
+//Routes
+app.get("/", async (req, res) => {
+  const blog = await Post.find()
+    .then((blog) => res.json(blog))
+    .catch((err) => res.json(err));
+});
+
+app.post("/post-newpost", async (req, res) => {
+  await Post.create(req.body);
+  console.log(req.body);
+  res.redirect("/");
 });
 
 const port = 5000;
