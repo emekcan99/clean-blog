@@ -29,6 +29,13 @@ app.get("/", async (req, res) => {
     .catch((err) => res.json(err));
 });
 
+app.get("/posts/:id", async (req, res) => {
+  console.log(req.params.id);
+  const post = await Post.findById(req.params.id)
+    .then((post) => res.json(post))
+    .catch((err) => res.json(err));
+});
+
 app.post("/post-newpost", async (req, res) => {
   await Post.create(req.body);
   console.log(req.body);
