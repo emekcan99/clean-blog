@@ -2,6 +2,14 @@ import express from "express";
 import mongoose from "mongoose";
 import Post from "./modals/Post.mjs";
 import cors from "cors";
+import {
+  getPosts,
+  getOnePost,
+  createPost,
+  updatePost,
+  deletePost,
+} from "./controller/postController.mjs";
+
 const app = express();
 
 //db connection
@@ -11,9 +19,7 @@ mongoose.connect("mongodb://localhost/clean-blog-test-db");
 //Middlewares
 
 app.use(express.urlencoded({ extended: true }));
-
 app.use(express.json());
-
 app.use(
   cors({
     origin: "http://localhost:3000", // İzin verilen kaynak adresi
@@ -23,24 +29,11 @@ app.use(
 );
 
 //Routes
-app.get("/", async (req, res) => {
-  const blog = await Post.find()
-    .then((blog) => res.json(blog))
-    .catch((err) => res.json(err));
-});
-
-app.get("/posts/:id", async (req, res) => {
-  console.log(req.params.id);
-  const post = await Post.findById(req.params.id)
-    .then((post) => res.json(post))
-    .catch((err) => res.json(err));
-});
-
-app.post("/post-newpost", async (req, res) => {
-  await Post.create(req.body);
-  console.log(req.body);
-  res.redirect("/");
-});
+app.get("/", getPosts);
+app.get("/posts/:id", getOnePost);
+app.post("/post-newpost", createPost);
+app.put("/posts/:id", updatePost);
+app.delete("/posts/:id", deletePost);
 
 const port = 5000;
 
